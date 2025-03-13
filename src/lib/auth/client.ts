@@ -57,12 +57,42 @@ class AuthClient {
     // Make API request
 
     // We do not handle the API, so we'll check if the credentials match with the hardcoded ones.
-    if (email !== 'sofia@devias.io' || password !== 'Secret1') {
-      return { error: 'Invalid credentials' };
-    }
 
-    const token = generateToken();
-    localStorage.setItem('custom-auth-token', token);
+	const requestBody = {
+	  username: email,
+	  password: password
+	};
+
+	try {
+		
+  		const response = await fetch('http://localhost:7001/trainos-admin/login', {
+		    method: 'POST',
+		    headers: {
+		      'Content-Type': 'application/json',
+		    },
+		    body: JSON.stringify(requestBody), // Convert object to JSON string
+		});
+	
+		if (response.ok) {
+			console.log('Successfully logged in');
+			const data = await response.json();
+    		localStorage.setItem('custom-auth-token', data.data.token);
+			localStorage.setItem('token', data.data.token);
+			localStorage.setItem('userId', data.data.userId);
+		} else {
+		   	console.error('Error login:', response.status);
+			console.log(requestBody.username +" "+requestBody.password);
+            return { error: 'Invalid credentials' };
+		}
+	} catch (error) {
+	  console.error('Error login:', error);
+	   console.log(requestBody.username +" "+requestBody.password);
+	   return { error: 'Invalid credentials' };
+	}
+
+    /*if (email !== 'sofia@devias.io' || password !== 'Secret1') {
+      return { error: 'Invalid credentials' };
+    }*/
 
     return {};
   }

@@ -1,5 +1,6 @@
+"use client";
 import * as React from 'react';
-import type { Metadata } from 'next';
+//import type { Metadata } from 'next';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Pagination from '@mui/material/Pagination';
@@ -10,13 +11,30 @@ import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Downloa
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 import dayjs from 'dayjs';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { config } from '@/config';
 import { IntegrationCard } from '@/components/dashboard/integrations/integrations-card';
 import type { Integration } from '@/components/dashboard/integrations/integrations-card';
 import { CompaniesFilters } from '@/components/dashboard/integrations/integrations-filters';
 
-export const metadata = { title: `Integrations | Dashboard | ${config.site.name}` } satisfies Metadata;
+//export const metadata = { title: `Integrations | Dashboard | ${config.site.name}` } satisfies Metadata;
+
+// Dummy data for the table
+/*const dummyData = [
+  { id: 1, name: 'John Doe', username: 'johndoe', roleName: 'Admin', roleDescription: 'Desc 1' },
+  { id: 2, name: 'Jane Smith', username: 'janesmith', roleName: 'Editor', roleDescription: 'Desc 1'},
+  { id: 3, name: 'Emily Davis', username: 'emilydavis', roleName: 'Viewer', roleDescription: 'Desc 1' },
+  { id: 4, name: 'Michael Brown', username: 'michaelbrown', roleName: 'Editor', roleDescription: 'Desc 1' },
+];*/
 
 const integrations = [
   {
@@ -70,19 +88,58 @@ const integrations = [
 ] satisfies Integration[];
 
 export default function Page(): React.JSX.Element {
+  	
+ const [searchResults, setSearchResults] = React.useState<any>(null);
+ const [searchTypeUser, setSearchTypeUser] = React.useState<string | null>(null);
+ const [searchParam, setSearchParam] = React.useState<string | null>(null);
+
+ const handleSearch = async () => {
+	const token = localStorage.getItem('token');
+	const userId = localStorage.getItem('userId');
+	
+	const queryParams = new URLSearchParams({
+	    searchTypeUser,
+		searchParam,
+	  });
+
+    try {
+	   let url = 'http://localhost:7001/trainos-admin/admin/searchUsers?${queryParams}';
+	   if(searchTypeUser != null && searchParam != null){
+	   	   url = 'http://localhost:7001/trainos-admin/admin/searchUsers';
+	   }
+       const response = await fetch(url , {
+	      method: 'GET',
+	      headers: {
+	        'Content-Type': 'application/json',
+	        'Authorization': `Bearer ${token}`,
+	        'userId': userId,
+	      },
+	    });
+		if (!response.ok) {
+	      throw new Error(`Error: ${response.statusText}`);
+	    }
+	
+	    const data = await response.json();
+		console.log(data);
+	    setSearchResults(data.data);
+    } catch (error) {
+      console.error("API call failed", error);
+    }
+  };	
+	
   return (
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Integrations</Typography>
-          <Stack sx={{ alignItems: 'center' }} direction="row" spacing={1}>
+          <Typography variant="h4">Users</Typography>
+          {/*<Stack sx={{ alignItems: 'center' }} direction="row" spacing={1}>
             <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
               Import
             </Button>
             <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
               Export
             </Button>
-          </Stack>
+          </Stack>*/}
         </Stack>
         <div>
           <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="contained">
@@ -90,8 +147,38 @@ export default function Page(): React.JSX.Element {
           </Button>
         </div>
       </Stack>
-      <CompaniesFilters />
-      <Grid container spacing={3}>
+      <CompaniesFilters onSearch={handleSearch} searchResults={searchResults} searchTypeUser={searchTypeUser} searchParam={searchParam}/>
+	  <TableContainer component={Paper}>
+	      <Table>
+	        <TableHead>
+	          <TableRow>
+	            <TableCell>Name</TableCell>
+	            <TableCell>Username</TableCell>
+	            <TableCell>Role</TableCell>
+				<TableCell>Description</TableCell>
+	            {/* The "Edit" column doesn't need a title */}
+	            <TableCell />
+	          </TableRow>
+	        </TableHead>
+	        <TableBody>
+	          {searchResults?.map((user) => (
+	            <TableRow key={user.id}>
+	              <TableCell>{user.fullName}</TableCell>
+	              <TableCell>{user.username}</TableCell>
+	              <TableCell>{user.roleName}</TableCell>
+				  <TableCell>{user.roleDescription}</TableCell>
+	              {/* Edit column with a button */}
+	              <TableCell>
+	                <Button startIcon={<EditIcon />} size="small" color="primary">
+	                  Edit
+	                </Button>
+	              </TableCell>
+	            </TableRow>
+	          ))}
+	        </TableBody>
+	      </Table>
+      </TableContainer>
+      {/*<Grid container spacing={3}>
         {integrations.map((integration) => (
           <Grid key={integration.id} lg={4} md={6} xs={12}>
             <IntegrationCard integration={integration} />
@@ -100,7 +187,7 @@ export default function Page(): React.JSX.Element {
       </Grid>
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <Pagination count={3} size="small" />
-      </Box>
+      </Box>*/}
     </Stack>
   );
 }

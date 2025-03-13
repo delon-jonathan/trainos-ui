@@ -13,7 +13,7 @@ export default function Page(): React.JSX.Element {
   return (
     <Stack spacing={3}>
       <div>
-        <Typography variant="h4">Settings</Typography>
+        <Typography variant="h4">Users</Typography>
       </div>
       <Notifications />
       <UpdatePasswordForm />
