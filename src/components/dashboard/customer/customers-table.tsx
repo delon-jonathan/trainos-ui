@@ -23,6 +23,7 @@ export interface Customer {
 
 interface CustomersTableProps {
   count?: number;
+  setPage: (value: number) => void;
   page?: number;
   rows?: Customer[];
   dailyPassengerData: { [key: string]: any };
@@ -35,8 +36,10 @@ interface CustomersTableProps {
 export function CustomersTable({
   count = 0,
   rows = [],
-  page = 0,
+  page = 1,
   dailyPassengerData,
+  setDailyPassengerData,
+  setPage,
   rowsPerPage = 0,
   startDate,
   endDate,
@@ -84,13 +87,14 @@ export function CustomersTable({
 		return { entryCount : stationObj.passengerCountList[interval].entryCount, exitCount: stationObj.passengerCountList[interval].exitCount};
 	};
 	
-  const handlePageChange = (_event: unknown, newPage: number) => {
-	  page = newPage + 1;
-	  console.log(newPage + 1);
-      handleSearch(page)
+  const handlePageChange = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+	  page = newPage;
+	  console.log(page);
+      setPage(newPage);
+      handleSearch(newPage);
   };
 
-  const handleSearch = async () => {
+  const handleSearch = async (pageNo: number) => {
 	 const token = localStorage.getItem('token');
 	 const userId = localStorage.getItem('userId');
 	
@@ -98,7 +102,7 @@ export function CustomersTable({
 	    startDate,
 	    endDate: isSpecificDay ? startDate : endDate,
 	    searchType: searchType,
-	    pageNo: page.toString(),
+	    pageNo: pageNo.toString(),
 	  });
 	
 	  try {
@@ -117,7 +121,7 @@ export function CustomersTable({
 	
 	    const data = await response.json();
 		console.log(data);
-		dailyPassengerData = data.data
+		setDailyPassengerData(data.data);
 	  } catch (error) {
 	    console.error('Search failed:', error);
 	  }
@@ -248,9 +252,9 @@ export function CustomersTable({
         count={dailyPassengerData.totalRecord}
         onPageChange={handlePageChange}
         onRowsPerPageChange={noop}
-        page={page - 1}
+        page={page}
         rowsPerPage={20} // Fixed 20 rows per page
-        rowsPerPageOptions={[20]} // Only allow 20 rows per page
+        rowsPerPageOptions={[]} // Only allow 20 rows per page
       />
     </Card>
   );

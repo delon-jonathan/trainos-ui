@@ -79,6 +79,8 @@ class AuthClient {
     		localStorage.setItem('custom-auth-token', data.data.token);
 			localStorage.setItem('token', data.data.token);
 			localStorage.setItem('userId', data.data.userId);
+			localStorage.setItem('fullName', data.data.fullName);
+			localStorage.setItem('username', data.data.username);
 		} else {
 		   	console.error('Error login:', response.status);
 			console.log(requestBody.username +" "+requestBody.password);

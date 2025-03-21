@@ -39,7 +39,7 @@ export default function Page(): React.JSX.Element {
   const handleUpload = async () => {
 	
 	const token = localStorage.getItem('token');
-	const userId = localStorage.getItem('userId')
+	const userId = localStorage.getItem('userId');
 	
     if (selectedFile) {
       const formData = new FormData();

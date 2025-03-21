@@ -133,7 +133,7 @@ export default function Page(): React.JSX.Element {
           sx={{ height: '100%' }}
         />
       </Grid>*/}
-      <Grid lg={12} md={12} xs={12}>
+      {/*<Grid lg={12} md={12} xs={12}>
         <LatestOrders
           orders={[
             {
@@ -181,7 +181,7 @@ export default function Page(): React.JSX.Element {
           ]}
           sx={{ height: '100%' }}
         />
-      </Grid>
+      </Grid>*/}
     </Grid>
   );
 }

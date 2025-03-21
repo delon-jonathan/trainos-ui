@@ -115,6 +115,8 @@ export function CustomersFilters(): React.JSX.Element {
       <CustomersTable
 		  count={tableData.length}
 		  dailyPassengerData={dailyPassengerData}
+		  setDailyPassengerData={setDailyPassengerData}
+		  setPage={setPage}
 		  page={page}
 		  rowsPerPage={rowsPerPage}
 		  startDate={startDate} // Pass startDate
@@ -122,7 +124,6 @@ export function CustomersFilters(): React.JSX.Element {
 		  searchType={searchType} // Pass searchType
 	      isSpecificDay={isSpecificDay}
 		/>
-      />
     </Card>
   );
 }

@@ -7,7 +7,7 @@ import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react/dist/ssr/ArrowDown';
 import { ArrowUp as ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp';
-import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 
 export interface TotalCustomersProps {
   diff?: number;
@@ -30,18 +30,18 @@ export function TotalCustomers({ diff, trend, sx, value, peak }: TotalCustomersP
               <Typography color="text.secondary" variant="overline">
                 Total Passengers Peak Hours {peak}
               </Typography>
-              <Typography variant="h4">{value}</Typography>
+              <Typography variant="h4">{value} Station</Typography>
             </Stack>
-            <Avatar sx={{ backgroundColor: 'var(--mui-palette-success-main)', height: '56px', width: '56px' }}>
-              <UsersIcon fontSize="var(--icon-fontSize-lg)" />
-            </Avatar>
+            <Avatar sx={{ backgroundColor: '#1976d2', height: '56px', width: '56px' }}>
+  				<PeopleAltIcon fontSize="var(--icon-fontSize-lg)" />
+			</Avatar>
           </Stack>
           {diff ? (
             <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
               <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
                 {/*<TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />*/}
                 <Typography color={trendColor} variant="body2">
-                  {diff}
+                  Total {diff}
                 </Typography>
               </Stack>
               <Typography color="text.secondary" variant="caption">
