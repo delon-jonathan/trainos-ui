@@ -22,45 +22,45 @@ const statusMap = {
 } as const;
 
 export interface Order {
-  id: string;
-  customer: { name: string };
-  amount: number;
-  status: 'pending' | 'delivered' | 'refunded';
-  createdAt: Date;
+  time: string;
+  predictedDataToday: number;
 }
 
 export interface LatestOrdersProps {
   orders?: Order[];
   sx?: SxProps;
+  selectedStation: number;
+  stations: string[];
+  timestampLatest: Date;
 }
 
-export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.Element {
+export function LatestOrders({ orders = [], sx, selectedStation, stations, timestampLatest}: LatestOrdersProps): React.JSX.Element {
   return (
     <Card sx={sx}>
-      <CardHeader title="Latest orders" />
+      <CardHeader  align="center" title={stations[selectedStation] +" - "+timestampLatest} />
       <Divider />
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: 800 }}>
           <TableHead>
             <TableRow>
-              <TableCell>Order</TableCell>
-              <TableCell>Customer</TableCell>
-              <TableCell sortDirection="desc">Date</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>Peak Hour</TableCell>
+              {/*<TableCell>Predicted Count</TableCell>
+              <TableCell sortDirection="desc">Date</TableCell>*/}
+              <TableCell  align="center">Predicted Passenger Count</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {orders.map((order) => {
-              const { label, color } = statusMap[order.status] ?? { label: 'Unknown', color: 'default' };
+              //const { label, color } = statusMap[order.status] ?? { label: 'Unknown', color: 'default' };
 
               return (
                 <TableRow hover key={order.id}>
-                  <TableCell>{order.id}</TableCell>
-                  <TableCell>{order.customer.name}</TableCell>
-                  <TableCell>{dayjs(order.createdAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{order.time}</TableCell>
+                  <TableCell align="center">{order.predictedDataToday}</TableCell>
+                  {/*<TableCell>{dayjs(order.createdAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell>
                     <Chip color={color} label={label} size="small" />
-                  </TableCell>
+                  </TableCell>*/}
                 </TableRow>
               );
             })}
@@ -68,7 +68,7 @@ export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.
         </Table>
       </Box>
       <Divider />
-      <CardActions sx={{ justifyContent: 'flex-end' }}>
+      {/*<CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button
           color="inherit"
           endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
@@ -77,7 +77,7 @@ export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.
         >
           View all
         </Button>
-      </CardActions>
+      </CardActions>*/}
     </Card>
   );
 }

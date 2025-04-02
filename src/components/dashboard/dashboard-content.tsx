@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Grid } from "@mui/material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { 
@@ -15,32 +15,26 @@ import {
   Legend 
 } from "recharts";
 
-const stations = [
-  "Recto",
-  "Legarda",
-  "Pureza",
-  "V. Mapa",
-  "J. Ruiz",
-  "Gilmore",
-  "Betty-Go Belmonte",
-  "Araneta Cubao",
-  "Anonas",
-  "Katipunan",
-  "Santolan",
-  "Marikina-Pasig",
-  "Antipolo",
-];
-
 interface PageProps {
   passengerDataByStation: { [key: string]: any };
   stationPassengerCountMap: { [key: string]: any };
+  selectedStation: number;
+  setSelectedStation: (newValue: number) => void;
+  stations: string[];
+  timestampLatest: Date;
+  timestampPrevious: Date;
 }
 
 export default function DashboardContent({
 	passengerDataByStation,
 	stationPassengerCountMap,
+	selectedStation,
+	setSelectedStation,
+	stations,
+	timestampLatest,
+	timestampPrevious,
+	
 } : PageProps): React.JSX.Element {
-  const [selectedStation, setSelectedStation] = React.useState(0);
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setSelectedStation(newValue);
@@ -68,9 +62,9 @@ export default function DashboardContent({
            	<YAxis domain={[0, 'auto']} allowDataOverflow />
             <Tooltip />
             <Legend />
-            <Bar dataKey="actualDataYesterday" fill="#8884d8" name="Actual Data Yesterday" />
-            <Bar dataKey="predictedDataYesterday" fill="#82ca9d" name="Predicted Data Yesterday" />
-            <Bar dataKey="predictedDataToday" fill="#ff7300" name="Predicted Data Today" />
+            <Bar dataKey="actualDataYesterday" fill="#8884d8" name={"Actual Data "+timestampPrevious} />
+            <Bar dataKey="predictedDataYesterday" fill="#82ca9d" name={"Predicted Data "+timestampPrevious} />
+            <Bar dataKey="predictedDataToday" fill="#ff7300" name={"Predicted Data "+timestampLatest} />
           </BarChart>
         </ResponsiveContainer>
       </Grid>

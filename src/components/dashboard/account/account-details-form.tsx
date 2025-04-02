@@ -12,7 +12,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
-import Grid from '@mui/material/Unstable_Grid2';
+import { Grid } from "@mui/material";
 
 const states = [
   { value: 'alabama', label: 'Alabama' },

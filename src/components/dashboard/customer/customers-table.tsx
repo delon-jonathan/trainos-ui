@@ -230,7 +230,7 @@ export function CustomersTable({
 		              textAlign: 'center',
 		              position: 'sticky',
 		              right: 0,
-		              backgroundColor: '#fff', // or any color to match the background
+		              backgroundColor: 'inherit',
 		              zIndex: 1,
 		              minWidth: 100, // Ensure the total column is wide enough
 		            }}
