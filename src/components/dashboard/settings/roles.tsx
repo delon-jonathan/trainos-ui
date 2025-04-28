@@ -27,7 +27,7 @@ export function Roles(): React.JSX.Element {
 	        menuId: permission.id,
 	        menuName: permission.name,
 	        menuDescription: permission.description,
-	        enabled: permission.enabled,
+	        enabled: permission.enabled ?? "N",
 	      });
 	
 	      // Recursively process child permissions if they exist
@@ -60,7 +60,7 @@ export function Roles(): React.JSX.Element {
         parentId: parentMenuId,
         name: menuName,
         description: menuDescription,
-        enabled: enabled,
+        enabled: enabled ?? "N",
         children: [] // Initialize an empty array for children
       };
     });
@@ -291,7 +291,7 @@ export function Roles(): React.JSX.Element {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><strong>Role ID</strong></TableCell>
+                {/*<TableCell><strong>Role ID</strong></TableCell>*/}
                 <TableCell><strong>Role Name</strong></TableCell>
                 <TableCell><strong>Role Description</strong></TableCell>
                 <TableCell align="right"><strong>Actions</strong></TableCell>
@@ -301,7 +301,7 @@ export function Roles(): React.JSX.Element {
 			  {Array.isArray(roles) && roles.length > 0 ? (
 			    roles.map((role) => (
 			      <TableRow key={role.roleId}>
-			        <TableCell>{role.roleId}</TableCell>
+			        {/*<TableCell>{role.roleId}</TableCell>*/}
 			        <TableCell>{role.roleName}</TableCell>
 			        <TableCell>{role.roleDescription}</TableCell>
 			        <TableCell align="right">

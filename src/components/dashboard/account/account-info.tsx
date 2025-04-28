@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -23,25 +25,25 @@ export function AccountInfo(): React.JSX.Element {
       <CardContent>
         <Stack spacing={2} sx={{ alignItems: 'center' }}>
           <div>
-            <Avatar src={user.avatar} sx={{ height: '80px', width: '80px' }} />
+            <Avatar src="/assets/logo-github.png" sx={{ height: '80px', width: '80px' }} />
           </div>
           <Stack spacing={1} sx={{ textAlign: 'center' }}>
-            <Typography variant="h5">{user.name}</Typography>
-            <Typography color="text.secondary" variant="body2">
+            <Typography variant="h5">{localStorage.getItem("fullName")}</Typography>
+            {/*<Typography color="text.secondary" variant="body2">
               {user.city} {user.country}
             </Typography>
             <Typography color="text.secondary" variant="body2">
               {user.timezone}
-            </Typography>
+            </Typography>8*/}
           </Stack>
         </Stack>
       </CardContent>
       <Divider />
-      <CardActions>
+      {/*<CardActions>
         <Button fullWidth variant="text">
           Upload picture
         </Button>
-      </CardActions>
+      </CardActions>*/}
     </Card>
   );
 }

@@ -1,87 +1,184 @@
 'use client';
 
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
-import { Grid } from "@mui/material";
-
-const states = [
-  { value: 'alabama', label: 'Alabama' },
-  { value: 'new-york', label: 'New York' },
-  { value: 'san-francisco', label: 'San Francisco' },
-  { value: 'los-angeles', label: 'Los Angeles' },
-] as const;
+import {
+  Button, Card, CardActions, CardContent, CardHeader, Divider,
+  FormControl, InputLabel, OutlinedInput, Grid
+} from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 export function AccountDetailsForm(): React.JSX.Element {
+  const router = useRouter();
+  const [fullName, setFullName] = React.useState<string>(() => localStorage.getItem("fullName") || "");
+  const username = React.useMemo(() => localStorage.getItem("username") || "", []);
+  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId');
+
+  // Password update fields
+  const [currentPassword, setCurrentPassword] = React.useState('');
+  const [newPassword, setNewPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
+
+  const handleSaveDetails = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+    try {
+      const response = await fetch('http://localhost:7001/trainos-admin/account/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'userId': userId,
+        },
+        body: JSON.stringify({ fullName }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage = errorData?.message || 'Failed to update profile';
+        throw new Error(errorMessage);
+      }
+
+      localStorage.setItem("fullName", fullName);
+
+      alert('Save successfully!');
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert(error.message || 'An unexpected error occurred while updating the details.');
+    }
+  };
+
+  const handleUpdatePassword = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (newPassword !== confirmPassword) {
+      alert('New Password and Confirm Password do not match.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:7001/trainos-admin/account/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'userId': userId,
+        },
+        body: JSON.stringify({ currentPassword, password: newPassword }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData?.data?.message === 'Password not matched') {
+          alert('Password not matched');
+        } else {
+          throw new Error('Failed to update password');
+        }
+      } else {
+        alert('Password updated successfully!');
+      }
+
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      console.error(error);
+      alert(error.message || 'An unexpected error occurred while updating the password.');
+    }
+  };
+
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-      }}
-    >
-      <Card>
-        <CardHeader subheader="The information can be edited" title="Profile" />
-        <Divider />
-        <CardContent>
-          <Grid container spacing={3}>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>First name</InputLabel>
-                <OutlinedInput defaultValue="Sofia" label="First name" name="firstName" />
-              </FormControl>
+    <div>
+      {/* Profile Update Form */}
+      <form onSubmit={handleSaveDetails}>
+        <Card>
+          <CardHeader subheader="The information can be edited" title="Profile" />
+          <Divider />
+          <CardContent>
+            <Grid container spacing={3}>
+              <Grid item md={6} xs={12}>
+                <FormControl fullWidth required>
+                  <InputLabel>Name</InputLabel>
+                  <OutlinedInput
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    label="Name"
+                    name="fullName"
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormControl fullWidth required>
+                  <InputLabel>Username</InputLabel>
+                  <OutlinedInput
+                    value={username}
+                    label="Username"
+                    name="username"
+                    disabled
+                  />
+                </FormControl>
+              </Grid>
             </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Last name</InputLabel>
-                <OutlinedInput defaultValue="Rivers" label="Last name" name="lastName" />
-              </FormControl>
+          </CardContent>
+          <Divider />
+          <CardActions sx={{ justifyContent: 'flex-end' }}>
+            <Button type="submit" variant="contained">Save details</Button>
+          </CardActions>
+        </Card>
+      </form>
+
+      {/* Password Update Form */}
+      <form onSubmit={handleUpdatePassword}>
+        <Card sx={{ mt: 4 }}>
+          <CardHeader subheader="Update your password" title="Change Password" />
+          <Divider />
+          <CardContent>
+            <Grid container spacing={3}>
+              <Grid item md={6} xs={12}>
+                <FormControl fullWidth required>
+                  <InputLabel>Current Password</InputLabel>
+                  <OutlinedInput 
+                    label="Current Password" 
+                    name="currentPassword" 
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormControl fullWidth required>
+                  <InputLabel>New Password</InputLabel>
+                  <OutlinedInput 
+                    label="New Password" 
+                    name="newPassword" 
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormControl fullWidth required>
+                  <InputLabel>Confirm New Password</InputLabel>
+                  <OutlinedInput 
+                    label="Confirm New Password" 
+                    name="confirmPassword" 
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </FormControl>
+              </Grid>
             </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Email address</InputLabel>
-                <OutlinedInput defaultValue="sofia@devias.io" label="Email address" name="email" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>Phone number</InputLabel>
-                <OutlinedInput label="Phone number" name="phone" type="tel" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>State</InputLabel>
-                <Select defaultValue="New York" label="State" name="state" variant="outlined">
-                  {states.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>City</InputLabel>
-                <OutlinedInput label="City" />
-              </FormControl>
-            </Grid>
-          </Grid>
-        </CardContent>
-        <Divider />
-        <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained">Save details</Button>
-        </CardActions>
-      </Card>
-    </form>
+          </CardContent>
+          <Divider />
+          <CardActions sx={{ justifyContent: 'flex-end' }}>
+            <Button type="submit" variant="contained" color="primary">Update Password</Button>
+          </CardActions>
+        </Card>
+      </form>
+    </div>
   );
 }

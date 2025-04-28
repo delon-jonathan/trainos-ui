@@ -16,6 +16,7 @@
     "format:check": "prettier --check \"**/*.{js,jsx,mjs,ts,tsx,mdx}\" --cache"
   },
   "dependencies": {
+    "@date-io/date-fns": "^3.2.1",
     "@emotion/cache": "11.11.0",
     "@emotion/react": "11.11.4",
     "@emotion/server": "11.11.0",
@@ -29,7 +30,7 @@
     "@mui/material": "7.0.0",
     "@mui/system": "5.15.20",
     "@mui/utils": "5.15.20",
-    "@mui/x-date-pickers": "7.7.1",
+    "@mui/x-date-pickers": "^7.7.1",
     "@phosphor-icons/react": "2.1.6",
     "apexcharts": "3.49.2",
     "date-fns": "^3.6.0",
