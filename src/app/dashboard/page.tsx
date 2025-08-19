@@ -1,6 +1,6 @@
 "use client";
 import * as React from 'react';
-import { Grid, TextField, Button } from "@mui/material";
+import { Grid, TextField, Button, CircularProgress } from "@mui/material";
 
 import { config } from '@/config';
 import { Budget } from '@/components/dashboard/overview/budget';
@@ -13,6 +13,7 @@ export default function Page(): React.JSX.Element {
   const [passengerDataByStation, setPassengerDataByStation] = React.useState<any>(null);
   const [stationPassengerCountMap, setStationPassengerCountMap] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(false);
+  const [graphLoading, setGraphLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [selectedStation, setSelectedStation] = React.useState(0);
   const [timestampLatest, setTimestampLatest] = React.useState<Date | null>(null);
@@ -33,6 +34,7 @@ export default function Page(): React.JSX.Element {
 
   const fetchPassengerData = async (withDate: boolean = false) => {
     setLoading(true);
+    setGraphLoading(true);
     try {
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
@@ -66,6 +68,7 @@ export default function Page(): React.JSX.Element {
       setError(error.message);
     } finally {
       setLoading(false);
+      setGraphLoading(false);
     }
   };
 
@@ -74,30 +77,41 @@ export default function Page(): React.JSX.Element {
   }, []);
 
   React.useEffect(() => {
-	  if (dateChangedFromNotification && selectedDate) {
-	    fetchPassengerData(true);
-	    setDateChangedFromNotification(false); // reset flag
-	  }
+    if (dateChangedFromNotification && selectedDate) {
+      fetchPassengerData(true);
+      setDateChangedFromNotification(false); // reset flag
+    }
   }, [selectedDate, dateChangedFromNotification]);
 
   React.useEffect(() => {
-	  const handleStationChange = (stationIndex: number) => {
-	    setSelectedStation(stationIndex);
-	  };
-	
-	  const handleNotificationClick = ({ date }: { date: Date }) => {
-	    setSelectedDate(date);
-        setDateChangedFromNotification(true);
-	  };
-	
-	  EventBus.on("stationChange", handleStationChange);
-	  EventBus.on("notificationClicked", handleNotificationClick);
-	
-	  return () => {
-	    EventBus.off("stationChange", handleStationChange);
-	    EventBus.off("notificationClicked", handleNotificationClick);
-	  };
+    const handleStationChange = (stationIndex: number) => {
+      setSelectedStation(stationIndex);
+    };
+
+    const handleNotificationClick = ({ date }: { date: Date }) => {
+      setSelectedDate(date);
+      setDateChangedFromNotification(true);
+    };
+
+    EventBus.on("stationChange", handleStationChange);
+    EventBus.on("notificationClicked", handleNotificationClick);
+
+    return () => {
+      EventBus.off("stationChange", handleStationChange);
+      EventBus.off("notificationClicked", handleNotificationClick);
+    };
   }, []);
+
+  // Reload every 1 minute if passengerDataByStation is still {}
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (passengerDataByStation && Object.keys(passengerDataByStation).length === 0) {
+        fetchPassengerData();
+      }
+    }, 60000); // 60000 ms = 1 minute
+
+    return () => clearInterval(interval);
+  }, [passengerDataByStation]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -129,14 +143,20 @@ export default function Page(): React.JSX.Element {
 
       {/* GRAPH ON TOP */}
       <Grid item lg={12} xs={12}>
-        <DashboardContent 
-          passengerDataByStation={passengerDataByStation} 
-          selectedStation={selectedStation} 
-          setSelectedStation={setSelectedStation}
-          stations={stations}
-          timestampLatest={timestampLatest}
-          timestampPrevious={timestampPrevious}
-        />
+        {graphLoading || passengerDataByStation === null || Object.keys(passengerDataByStation).length === 0 ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <DashboardContent 
+            passengerDataByStation={passengerDataByStation} 
+            selectedStation={selectedStation} 
+            setSelectedStation={setSelectedStation}
+            stations={stations}
+            timestampLatest={timestampLatest}
+            timestampPrevious={timestampPrevious}
+          />
+        )}
       </Grid>
 
       {/* TWO-PANE LAYOUT */}
